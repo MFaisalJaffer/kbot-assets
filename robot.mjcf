@@ -21,7 +21,9 @@
         <geom material="visualgeom" contype="0" conaffinity="0" group="2" />
       </default>
       <default class="collision">
-        <geom material="collision_material" condim="3" contype="0" conaffinity="1" priority="1" group="1" solref="0.005 1" friction="0.64" />
+        <!-- contype=2, conaffinity=3 enables both floor collisions (floor has contype=1, conaffinity=1)
+             AND self-collisions between body parts (both with contype=2 will match each other's conaffinity=3). -->
+        <geom material="collision_material" condim="3" contype="2" conaffinity="3" priority="1" group="1" solref="0.005 1" friction="0.64" />
         <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
       </default>
     </default>
@@ -69,6 +71,10 @@
       <body name="Torso_Side_Right" pos="0 -0.095 0" quat="0.7071054825112363 0.0 0.0 0.7071080798594735">
         <inertial pos="0.093177 -0.000920 -0.063462" quat="1.0 0.0 0.0 0.0" mass="9.003325" diaginertia="0.323898 0.341565 0.0394667" />
         <geom name="Torso_Side_Right_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="Torso_Side_Right_material" type="mesh" mesh="Torso_Side_Right.stl" class="visual" />
+        <!-- Self-collision capsule for the trunk so arms/elbows can't pass through.
+             Runs along the body z-axis from shoulder height to hip, with radius
+             ~9cm. Offset in x by 0.09 to match inertial center. -->
+        <geom name="torso_collision_capsule" type="capsule" fromto="0.09 0.0 0.10 0.09 0.0 -0.27" size="0.09" class="collision" />
         <body name="KC_C_104R_PitchHardstopDriven" pos="-0.028031 0.000007 0.126021" quat="0.5000001633974483 0.4999999999999733 0.49999983660255165 0.4999999999999733">
           <joint name="dof_right_shoulder_pitch_03" type="hinge" ref="0.0" class="robstride_03" range="-3.141593 1.396263" axis="0 0 1" />
           <inertial pos="-0.004584 0.002745 -0.051222" quat="1.0 0.0 0.0 0.0" mass="0.389899" diaginertia="0.000788 0.00102467 0.000944" />
@@ -81,10 +87,14 @@
               <joint name="dof_right_shoulder_yaw_02" type="hinge" ref="0.0" class="robstride_02" range="-1.658063 1.658063" axis="0 0 1" />
               <inertial pos="0.003910 -0.004160 -0.101316" quat="1.0 0.0 0.0 0.0" mass="0.495672" diaginertia="0.00160667 0.001472 0.000462" />
               <geom name="KC_C_202R_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="Torso_Side_Right_material" type="mesh" mesh="KC_C_202R.stl" class="visual" />
+              <!-- Upper arm collision: runs from shoulder to elbow joint. -->
+              <geom name="upper_arm_R_collision" type="capsule" fromto="0 0 0 0.019 -0.010 -0.137" size="0.04" class="collision" />
               <body name="KC_C_401R_R_UpForearmDrive" pos="0.018500 -0.010000 -0.137000" quat="0.7071068967259818 0.0 0.7071066656470943 0.0">
                 <joint name="dof_right_elbow_02" type="hinge" ref="0.0" class="robstride_02" range="0 2.478368" axis="0 0 -1" />
                 <inertial pos="0.061999 0.015867 -0.012446" quat="1.0 0.0 0.0 0.0" mass="0.390136" diaginertia="0.000348 0.000680667 0.00068" />
                 <geom name="KC_C_401R_R_UpForearmDrive_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="Torso_Side_Right_material" type="mesh" mesh="KC_C_401R_R_UpForearmDrive.stl" class="visual" />
+                <!-- Forearm collision: runs from elbow to wrist. -->
+                <geom name="forearm_R_collision" type="capsule" fromto="0 0 0 0.103 0.017 -0.018" size="0.035" class="collision" />
                 <body name="KB_C_501X_Right_Bayonet_Adapter_Hard_Stop" pos="0.103000 0.017350 -0.018000" quat="0.7071068967259818 0.0 -0.7071066656470943 0.0">
                   <joint name="dof_right_wrist_00" type="hinge" ref="0.0" class="robstride_00" range="-1.745329 1.745329" axis="0 0 1" />
                   <inertial pos="0.004187 0.000068 -0.019905" quat="1.0 0.0 0.0 0.0" mass="0.101465" diaginertia="4.06667e-05 4.06667e-05 5.6e-05" />
@@ -111,10 +121,14 @@
               <joint name="dof_left_shoulder_yaw_02" type="hinge" ref="0.0" class="robstride_02" range="-1.658063 1.658063" axis="0 0 -1" />
               <inertial pos="0.000925 0.006010 0.113327" quat="1.0 0.0 0.0 0.0" mass="0.386173" diaginertia="0.00102467 0.000922 0.000314" />
               <geom name="KC_C_202L_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="Torso_Side_Right_material" type="mesh" mesh="KC_C_202L.stl" class="visual" />
+              <!-- Upper arm collision: runs from shoulder to elbow joint. -->
+              <geom name="upper_arm_L_collision" type="capsule" fromto="0 0 0 -0.019 0.010 0.137" size="0.04" class="collision" />
               <body name="KC_C_401L_L_UpForearmDrive" pos="-0.018500 0.010000 0.137000" quat="-1.2247452309842457e-07 -0.7071068967259713 -1.22474483074382e-07 0.7071066656470838">
                 <joint name="dof_left_elbow_02" type="hinge" ref="0.0" class="robstride_02" range="-2.478368 0" axis="0 0 -1" />
                 <inertial pos="-0.061998 0.015867 -0.012446" quat="1.0 0.0 0.0 0.0" mass="0.390146" diaginertia="0.000348 0.000680667 0.00068" />
                 <geom name="KC_C_401L_L_UpForearmDrive_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="Torso_Side_Right_material" type="mesh" mesh="KC_C_401L_L_UpForearmDrive.stl" class="visual" />
+                <!-- Forearm collision: runs from elbow to wrist. -->
+                <geom name="forearm_L_collision" type="capsule" fromto="0 0 0 -0.103 0.017 -0.018" size="0.035" class="collision" />
                 <body name="KB_C_501X_Left_Bayonet_Adapter_Hard_Stop" pos="-0.103000 0.017350 -0.018000" quat="-1.2247452309842457e-07 -0.7071068967259713 -1.22474483074382e-07 0.7071066656470838">
                   <joint name="dof_left_wrist_00" type="hinge" ref="0.0" class="robstride_00" range="-1.745329 1.745329" axis="0 0 -1" />
                   <inertial pos="-0.004187 -0.000068 0.019905" quat="1.0 0.0 0.0 0.0" mass="0.101465" diaginertia="4.06667e-05 4.06667e-05 5.6e-05" />
